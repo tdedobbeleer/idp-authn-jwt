@@ -6,7 +6,9 @@ import com.nimbusds.jose.crypto.ECDSAVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -19,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -73,17 +76,37 @@ public class JWTProcessor {
         this.issuers = trustedIssuers.entrySet().stream()
                         .collect(Collectors.toMap(
                                 e -> e.getKey(),
-                                e -> (ECPublicKey) this.getKeyPair(e.getValue()).getPublic()
+                                e -> (ECPublicKey) this.getPublicKey(e.getValue())
                         ));
     }
 
-    private KeyPair getKeyPair(String keypair){
+    private PublicKey getPublicKey(String file){
+
+        Security.addProvider(new BouncyCastleProvider());
+
+        PEMParser pemParser = null;
+        try {
+            // Parse the EC key pair
+            pemParser = new PEMParser(new InputStreamReader(new FileInputStream(file)));
+            SubjectPublicKeyInfo pemKeyPair = (SubjectPublicKeyInfo) pemParser.readObject();
+            pemParser.close();
+            // Convert to Java (JCA) format
+            return new JcaPEMKeyConverter().getPublicKey(pemKeyPair);
+        } catch (PEMException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private KeyPair getKeyPair(String file){
         KeyPair keyPair = null;
         // Load BouncyCastle as JCA provider
         Security.addProvider(new BouncyCastleProvider());
         try {
             // Parse the EC key pair
-            PEMParser pemParser = new PEMParser(new InputStreamReader(new FileInputStream(keypair)));
+            PEMParser pemParser = new PEMParser(new InputStreamReader(new FileInputStream(file)));
             PEMKeyPair pemKeyPair = (PEMKeyPair)pemParser.readObject();
             // Convert to Java (JCA) format
             JcaPEMKeyConverter converter = new JcaPEMKeyConverter();

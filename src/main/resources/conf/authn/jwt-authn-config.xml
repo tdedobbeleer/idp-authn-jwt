@@ -19,7 +19,6 @@
     </bean>
     <bean id="shibboleth.authn.jwt.expiration" class="java.lang.String" c:_0="%{idp.authn.jwt.expiration:PT3M}"/>
     <bean id="shibboleth.authn.jwt.privatekey" class="java.lang.String" c:_0="%{idp.authn.jwt.privatekey}"/>
-    <bean id="shibboleth.authn.jwt.publickey" class="java.lang.String" c:_0="%{idp.authn.jwt.publickey}"/>
     <bean id="shibboleth.authn.jwt.jws.algorithms" class="java.util.ArrayList" c:_0="%{idp.authn.jwt.jws.algorithms}"/>
     <bean id="shibboleth.authn.jwt.jwe.algorithms" class="java.util.ArrayList" c:_0="%{idp.authn.jwt.jwe.algorithms}"/>
     <bean id="shibboleth.authn.jwt.jwe.enc_methods" class="java.lang.String" c:_0="%{idp.authn.jwt.jwe.enc_methods}"/>
