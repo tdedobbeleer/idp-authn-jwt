@@ -1,1 +1,1 @@
-new be.kuleuven.icts.ccis.Pipeline().start(archiveTestResults: false)
+new be.kuleuven.icts.ccis.SpringBootPipeline().start(archiveTestResults: false)
