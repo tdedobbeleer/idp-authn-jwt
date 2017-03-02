@@ -67,7 +67,10 @@ public class JWTValidator extends AbstractValidationAction {
             //remove jwt cookie
             Cookie jwtCookie = new Cookie(cookieName, "");
             jwtCookie.setMaxAge(0);
+            jwtCookie.setPath("/");
             jwtCookie.setDomain(cookieDomain);
+            jwtCookie.setSecure(true);
+            jwtCookie.setHttpOnly(true);
             this.getHttpServletResponse().addCookie(jwtCookie);
 
             buildAuthenticationResult(profileRequestContext, authenticationContext);
