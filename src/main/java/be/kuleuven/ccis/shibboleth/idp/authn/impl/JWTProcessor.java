@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -140,11 +141,16 @@ public class JWTProcessor {
                 return null;
             }
 
+            if(claimsSet.getIssueTime() == null) {
+                log.error("Claimset did not have a iat (issuetime): {}", claimsSet.toJSONObject().toJSONString());
+                return null;
+            }
+
             if(signedJWT.verify(new ECDSAVerifier(issuers.get(claimsSet.getIssuer())))) {
                 log.info("Signature of JWT signed by {} is correct", claimsSet.getIssuer());
-                LocalDateTime issueTime = claimsSet.getIssueTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                ZonedDateTime issueTime = ZonedDateTime.ofInstant(claimsSet.getIssueTime().toInstant(), ZoneId.systemDefault());
 
-                if (issueTime.plus(expiration).isAfter(LocalDateTime.now())){
+                if (issueTime.plus(expiration).isAfter(ZonedDateTime.now())){
                     log.info("JWT is still valid. JWT was created at: ", issueTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
                     return claimsSet.getSubject();
                 } else {
