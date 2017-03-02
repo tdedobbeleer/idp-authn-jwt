@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.KeyPair;
@@ -30,11 +29,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.time.temporal.ChronoUnit.MINUTES;
 
 /**
  * Created by philip on 28.02.17.
@@ -50,27 +48,30 @@ public class JWTProcessor {
 
     private ECPrivateKey privateKey;
     private ECPublicKey publicKey;
-    private ArrayList<JWEAlgorithm> jweAlgorithms;
-    private ArrayList<JWSAlgorithm> jwsAlgorithms;
-    private ArrayList<EncryptionMethod> encryptionMethods;
+    private List<JWEAlgorithm> jweAlgorithms;
+    private List<JWSAlgorithm> jwsAlgorithms;
+    private List<EncryptionMethod> encryptionMethods;
     private Duration expiration;
     private Map<String, ECPublicKey> issuers;
 
     public JWTProcessor(String privatekey,
-                        ArrayList jweAlgorithms,
-                        ArrayList jwsAlgorithms,
-                        ArrayList jweEncMethods,
+                        List<String> jweAlgorithms,
+                        List<String> jwsAlgorithms,
+                        List<String> jweEncMethods,
                         String jwtExpiration,
                         Map<String,String> trustedIssuers) {
+
+        // Load BouncyCastle as JCA provider
+        Security.addProvider(new BouncyCastleProvider());
 
         KeyPair keyPair = this.getKeyPair(privatekey);
         // Set private + public EC key
         this.privateKey = (ECPrivateKey)keyPair.getPrivate();
         this.publicKey = (ECPublicKey)keyPair.getPublic();
 
-        this.jweAlgorithms = jweAlgorithms;
-        this.jwsAlgorithms = jwsAlgorithms;
-        this.encryptionMethods = jweEncMethods;
+        this.jweAlgorithms = jweAlgorithms.stream().map(e -> JWEAlgorithm.parse(e)).collect(Collectors.toList());
+        this.jwsAlgorithms = jwsAlgorithms.stream().map(e -> JWSAlgorithm.parse(e)).collect(Collectors.toList());
+        this.encryptionMethods = jweEncMethods.stream().map(e -> EncryptionMethod.parse(e)).collect(Collectors.toList());
         this.expiration = Duration.parse(jwtExpiration);
 
         this.issuers = trustedIssuers.entrySet().stream()
@@ -80,50 +81,41 @@ public class JWTProcessor {
                         ));
     }
 
+
     private PublicKey getPublicKey(String file){
 
-        Security.addProvider(new BouncyCastleProvider());
-
-        PEMParser pemParser = null;
         try {
             // Parse the EC key pair
-            pemParser = new PEMParser(new InputStreamReader(new FileInputStream(file)));
+            PEMParser pemParser = new PEMParser(new InputStreamReader(new FileInputStream(file)));
             SubjectPublicKeyInfo pemKeyPair = (SubjectPublicKeyInfo) pemParser.readObject();
             pemParser.close();
             // Convert to Java (JCA) format
             return new JcaPEMKeyConverter().getPublicKey(pemKeyPair);
-        } catch (PEMException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to parse public key: {}", file);
         }
         return null;
     }
 
     private KeyPair getKeyPair(String file){
-        KeyPair keyPair = null;
-        // Load BouncyCastle as JCA provider
-        Security.addProvider(new BouncyCastleProvider());
+
+
         try {
             // Parse the EC key pair
             PEMParser pemParser = new PEMParser(new InputStreamReader(new FileInputStream(file)));
             PEMKeyPair pemKeyPair = (PEMKeyPair)pemParser.readObject();
             // Convert to Java (JCA) format
             JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
-            keyPair = converter.getKeyPair(pemKeyPair);
             pemParser.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            return converter.getKeyPair(pemKeyPair);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to parse keypair key: {}", file);
         }
-        return keyPair;
+        return null;
     }
 
     public String validateAndExtractSubjectFromJWT(String jwt) {
 
-        String subject = null;
         try {
             JWEObject jweObject = JWEObject.parse(jwt);
             if (! jweAlgorithms.contains(jweObject.getHeader().getAlgorithm()) ||
@@ -154,7 +146,7 @@ public class JWTProcessor {
 
                 if (issueTime.plus(expiration).isAfter(LocalDateTime.now())){
                     log.info("JWT is still valid. JWT was created at: ", issueTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
-                    subject = claimsSet.getSubject();
+                    return claimsSet.getSubject();
                 } else {
                     log.error("JWT has expired. Issued at {}. Expiration at {}.",
                             issueTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
@@ -169,7 +161,7 @@ public class JWTProcessor {
         } catch (JOSEException e) {
             log.error("Unable to decrypt or verify signature: {}", e.getMessage());
         }
-        return subject;
+        return null;
 
     }
 }

@@ -21,13 +21,13 @@
     <bean id="shibboleth.authn.jwt.privatekey" class="java.lang.String" c:_0="%{idp.authn.jwt.privatekey}"/>
     <bean id="shibboleth.authn.jwt.jws.algorithms" class="java.util.ArrayList" c:_0="%{idp.authn.jwt.jws.algorithms}"/>
     <bean id="shibboleth.authn.jwt.jwe.algorithms" class="java.util.ArrayList" c:_0="%{idp.authn.jwt.jwe.algorithms}"/>
-    <bean id="shibboleth.authn.jwt.jwe.enc_methods" class="java.lang.String" c:_0="%{idp.authn.jwt.jwe.enc_methods}"/>
+    <bean id="shibboleth.authn.jwt.jwe.enc_methods" class="java.util.ArrayList" c:_0="%{idp.authn.jwt.jwe.enc_methods}"/>
     <bean id="shibboleth.authn.jwt.cookie_name" class="java.lang.String" c:_0="%{idp.authn.jwt.cookie_name}"/>
 
     <!-- Simple transforms to apply to username before validation. -->
-    <util:constant id="shibboleth.authn.SMSToken.Lowercase" static-field="java.lang.Boolean.TRUE"/>
-    <util:constant id="shibboleth.authn.SMSToken.Uppercase" static-field="java.lang.Boolean.FALSE"/>
-    <util:constant id="shibboleth.authn.SMSToken.Trim" static-field="java.lang.Boolean.TRUE"/>
+    <util:constant id="shibboleth.authn.jwt.Lowercase" static-field="java.lang.Boolean.TRUE"/>
+    <util:constant id="shibboleth.authn.jwt.Uppercase" static-field="java.lang.Boolean.FALSE"/>
+    <util:constant id="shibboleth.authn.jwt.Trim" static-field="java.lang.Boolean.TRUE"/>
 
 
     <!--

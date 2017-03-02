@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.Subject;
+import javax.servlet.http.Cookie;
 
 /**
  * Created by philip on 28.02.2017
@@ -27,8 +28,11 @@ public class JWTValidator extends AbstractValidationAction {
 
     private JWTContext jwtCtx;
 
-    public JWTValidator() {
+    private final String cookieName;
+
+    public JWTValidator(String cookieName) {
         super();
+        this.cookieName = cookieName;
     }
 
 
@@ -53,11 +57,16 @@ public class JWTValidator extends AbstractValidationAction {
                              @Nonnull final AuthenticationContext authenticationContext) {
 
 
-        if (jwtCtx.getUsername() == null) {
+        if (jwtCtx.getUsername() == null || jwtCtx.getUsername().equals("")) {
             log.error("Could not extract user JWTContext");
             ActionSupport.buildEvent(profileRequestContext, AuthnEventIds.AUTHN_EXCEPTION);
         } else {
             log.info("JWT username is: {}", jwtCtx.getUsername());
+            //remove jwt cookie
+            Cookie jwtCookie = new Cookie(cookieName, "");
+            jwtCookie.setMaxAge(0);
+            this.getHttpServletResponse().addCookie(jwtCookie);
+
             buildAuthenticationResult(profileRequestContext, authenticationContext);
             ActionSupport.buildProceedEvent(profileRequestContext);
         }
@@ -69,5 +78,6 @@ public class JWTValidator extends AbstractValidationAction {
         subject.getPrincipals().add(new UsernamePrincipal(jwtCtx.getUsername()));
         return subject;
     }
+
 
 }

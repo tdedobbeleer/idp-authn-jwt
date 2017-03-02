@@ -30,6 +30,8 @@
 
     <bean id="jwtValidator" class="be.kuleuven.ccis.shibboleth.idp.authn.impl.JWTValidator" scope="prototype"
           p:httpServletRequest-ref="shibboleth.HttpServletRequest"
+          p:httpServletResponse-ref="shibboleth.HttpServletResponse"
+          c:cookieName-ref="shibboleth.authn.jwt.cookie_name"
           p:classifiedMessages-ref="shibboleth.authn.jwt.ClassifiedMessageMap"/>
 
     <bean id="jwtProcessor" class="be.kuleuven.ccis.shibboleth.idp.authn.impl.JWTProcessor"
