@@ -25,7 +25,11 @@ public class InitializeJWTContext extends AbstractExtractionAction {
     private final Logger log = LoggerFactory.getLogger(InitializeJWTContext.class);
 
     private JWTContext jwtCtx;
-    private String cookieName;
+    private final String cookieName;
+
+    public InitializeJWTContext(String cookieName) {
+        this.cookieName = cookieName;
+    }
 
     /**
      * Performs this authentication action's pre-execute step. Default implementation just returns true.
@@ -71,7 +75,4 @@ public class InitializeJWTContext extends AbstractExtractionAction {
 
     }
 
-    public void setCookieName(String cookieName) {
-        this.cookieName = cookieName;
-    }
 }

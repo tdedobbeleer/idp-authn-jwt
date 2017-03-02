@@ -29,10 +29,12 @@ public class JWTValidator extends AbstractValidationAction {
     private JWTContext jwtCtx;
 
     private final String cookieName;
+    private String cookieDomain;
 
-    public JWTValidator(String cookieName) {
+    public JWTValidator(String cookieName, String cookieDomain) {
         super();
         this.cookieName = cookieName;
+        this.cookieDomain = cookieDomain;
     }
 
 
@@ -65,6 +67,7 @@ public class JWTValidator extends AbstractValidationAction {
             //remove jwt cookie
             Cookie jwtCookie = new Cookie(cookieName, "");
             jwtCookie.setMaxAge(0);
+            jwtCookie.setDomain(cookieDomain);
             this.getHttpServletResponse().addCookie(jwtCookie);
 
             buildAuthenticationResult(profileRequestContext, authenticationContext);

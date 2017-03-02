@@ -23,6 +23,7 @@
     <bean id="shibboleth.authn.jwt.jwe.algorithms" class="java.util.ArrayList" c:_0="%{idp.authn.jwt.jwe.algorithms}"/>
     <bean id="shibboleth.authn.jwt.jwe.enc_methods" class="java.util.ArrayList" c:_0="%{idp.authn.jwt.jwe.enc_methods}"/>
     <bean id="shibboleth.authn.jwt.cookie_name" class="java.lang.String" c:_0="%{idp.authn.jwt.cookie_name}"/>
+    <bean id="shibboleth.authn.jwt.cookie_domain" class="java.lang.String" c:_0="%{idp.authn.jwt.cookie_domain}"/>
 
     <!-- Simple transforms to apply to username before validation. -->
     <util:constant id="shibboleth.authn.jwt.Lowercase" static-field="java.lang.Boolean.TRUE"/>

@@ -29,12 +29,11 @@ public class JWTExtractUsername extends AbstractExtractionAction {
     private JWTContext jwtCtx;
 
 
-    private JWTProcessor jwtProcessor;
+    private final JWTProcessor jwtProcessor;
 
-    public JWTExtractUsername() {
-        super();
+    public JWTExtractUsername(JWTProcessor jwtProcessor) {
+        this.jwtProcessor = jwtProcessor;
     }
-
 
     protected boolean doPreExecute(@Nonnull ProfileRequestContext profileRequestContext, @Nonnull AuthenticationContext authenticationContext) {
 
@@ -72,7 +71,5 @@ public class JWTExtractUsername extends AbstractExtractionAction {
 
     }
 
-    public void setJwtProcessor(JWTProcessor jwtProcessor) {
-        this.jwtProcessor = jwtProcessor;
-    }
+
 }

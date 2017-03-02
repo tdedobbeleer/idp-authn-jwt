@@ -8,7 +8,6 @@ import com.nimbusds.jwt.SignedJWT;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -26,7 +25,6 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.text.ParseException;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,13 +45,13 @@ public class JWTProcessor {
     @NotEmpty
     private final Logger log = LoggerFactory.getLogger(JWTProcessor.class);
 
-    private ECPrivateKey privateKey;
-    private ECPublicKey publicKey;
-    private List<JWEAlgorithm> jweAlgorithms;
-    private List<JWSAlgorithm> jwsAlgorithms;
-    private List<EncryptionMethod> encryptionMethods;
-    private Duration expiration;
-    private Map<String, ECPublicKey> issuers;
+    private final ECPrivateKey privateKey;
+    private final ECPublicKey publicKey;
+    private final List<JWEAlgorithm> jweAlgorithms;
+    private final List<JWSAlgorithm> jwsAlgorithms;
+    private final List<EncryptionMethod> encryptionMethods;
+    private final Duration expiration;
+    private final Map<String, ECPublicKey> issuers;
 
     public JWTProcessor(String privatekey,
                         List<String> jweAlgorithms,
@@ -84,7 +82,6 @@ public class JWTProcessor {
 
 
     private PublicKey getPublicKey(String file){
-
         try {
             // Parse the EC key pair
             PEMParser pemParser = new PEMParser(new InputStreamReader(new FileInputStream(file)));
@@ -99,8 +96,6 @@ public class JWTProcessor {
     }
 
     private KeyPair getKeyPair(String file){
-
-
         try {
             // Parse the EC key pair
             PEMParser pemParser = new PEMParser(new InputStreamReader(new FileInputStream(file)));

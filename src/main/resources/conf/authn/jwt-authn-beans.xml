@@ -17,21 +17,22 @@
 
     <bean id="initializeJWTContext" class="be.kuleuven.ccis.shibboleth.idp.authn.impl.InitializeJWTContext" scope="prototype"
           p:httpServletRequest-ref="shibboleth.HttpServletRequest"
-          p:cookieName-ref="shibboleth.authn.jwt.cookie_name"/>
+          c:cookieName-ref="shibboleth.authn.jwt.cookie_name"/>
 
     <bean id="jwtExtractUsername" class="be.kuleuven.ccis.shibboleth.idp.authn.impl.JWTExtractUsername" scope="prototype"
           p:httpServletRequest-ref="shibboleth.HttpServletRequest"
-          p:lowercase-ref="shibboleth.authn.SMSToken.Lowercase"
-          p:uppercase-ref="shibboleth.authn.SMSToken.Uppercase"
-          p:trim-ref="shibboleth.authn.SMSToken.Trim"
+          p:lowercase-ref="shibboleth.authn.jwt.Lowercase"
+          p:uppercase-ref="shibboleth.authn.jwt.Uppercase"
+          p:trim-ref="shibboleth.authn.jwt.Trim"
           p:transforms-ref="shibboleth.authn.jwt.Transforms"
-          p:jwtProcessor-ref="jwtProcessor"
+          c:jwtProcessor-ref="jwtProcessor"
           />
 
     <bean id="jwtValidator" class="be.kuleuven.ccis.shibboleth.idp.authn.impl.JWTValidator" scope="prototype"
           p:httpServletRequest-ref="shibboleth.HttpServletRequest"
           p:httpServletResponse-ref="shibboleth.HttpServletResponse"
           c:cookieName-ref="shibboleth.authn.jwt.cookie_name"
+          c:cookieDomain-ref="shibboleth.authn.jwt.cookie_domain"
           p:classifiedMessages-ref="shibboleth.authn.jwt.ClassifiedMessageMap"/>
 
     <bean id="jwtProcessor" class="be.kuleuven.ccis.shibboleth.idp.authn.impl.JWTProcessor"
