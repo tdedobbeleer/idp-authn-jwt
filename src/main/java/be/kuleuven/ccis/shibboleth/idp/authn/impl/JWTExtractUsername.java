@@ -61,8 +61,8 @@ public class JWTExtractUsername extends AbstractExtractionAction {
         String jwtSubject = jwtProcessor.validateAndExtractSubjectFromJWT(jwtCtx.getJwt());
 
         if (jwtSubject == null) {
-            log.error("Could not extract user from Signed & Encrypted JWT, continuing with other authn modules");
-            ActionSupport.buildEvent(profileRequestContext, AuthnEventIds.AUTHN_EXCEPTION);
+            log.warn("Could not extract user from Signed & Encrypted JWT, continuing with other authn modules");
+            ActionSupport.buildEvent(profileRequestContext, AuthnEventIds.RESELECT_FLOW);
         } else {
             log.info("Successfuly decrypted, validated and extracted subject from JWT: {}", jwtSubject);
             jwtCtx.setUsername(jwtSubject);

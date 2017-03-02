@@ -116,7 +116,7 @@ public class JWTProcessor {
             JWEObject jweObject = JWEObject.parse(jwt);
             if (! jweAlgorithms.contains(jweObject.getHeader().getAlgorithm()) ||
                   ! encryptionMethods.contains(jweObject.getHeader().getEncryptionMethod())) {
-                log.error("JWE was encrypted using a different algorithm ({}) or encryption method ({})",
+                log.warn("JWE was encrypted using a different algorithm ({}) or encryption method ({})",
                         jweObject.getHeader().getAlgorithm(),
                         jweObject.getHeader().getEncryptionMethod());
                 return null;
@@ -126,18 +126,18 @@ public class JWTProcessor {
 
             SignedJWT signedJWT = jweObject.getPayload().toSignedJWT();
             if(! jwsAlgorithms.contains(signedJWT.getHeader().getAlgorithm())) {
-                log.error("JWS was signed using a different algorithm ({})", signedJWT.getHeader().getAlgorithm());
+                log.warn("JWS was signed using a different algorithm ({})", signedJWT.getHeader().getAlgorithm());
                 return null;
             }
 
             JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
-            if(! issuers.containsKey(claimsSet.getIssuer())) {
-                log.error("JWS did not came from a trusted issuer: {}", claimsSet.getIssuer());
-                return null;
+
+            if(claimsSet.getIssuer() == null || claimsSet.getSubject() == null || claimsSet.getIssueTime() == null) {
+                log.warn("JWT did not contain the required elements: sub, iat, iss: {}", claimsSet.toJSONObject().toJSONString());
             }
 
-            if(claimsSet.getIssueTime() == null) {
-                log.error("Claimset did not have a iat (issuetime): {}", claimsSet.toJSONObject().toJSONString());
+            if(! issuers.containsKey(claimsSet.getIssuer())) {
+                log.warn("JWS did not came from a trusted issuer: {}", claimsSet.getIssuer());
                 return null;
             }
 
@@ -146,10 +146,10 @@ public class JWTProcessor {
                 ZonedDateTime issueTime = ZonedDateTime.ofInstant(claimsSet.getIssueTime().toInstant(), ZoneId.systemDefault());
 
                 if (issueTime.plus(expiration).isAfter(ZonedDateTime.now())){
-                    log.info("JWT is still valid. JWT was created at: ", issueTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+                    log.debug("JWT is valid for user {}. JWT was created at: ", claimsSet.getSubject(), issueTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
                     return claimsSet.getSubject();
                 } else {
-                    log.error("JWT has expired. Issued at {}. Expiration at {}.",
+                    log.warn("JWT has expired. Issued at {}. Expiration at {}.",
                             issueTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
                             issueTime.plus(expiration).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
                     return null;

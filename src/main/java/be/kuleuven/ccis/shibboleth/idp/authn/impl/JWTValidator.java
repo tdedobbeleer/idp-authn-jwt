@@ -28,16 +28,6 @@ public class JWTValidator extends AbstractValidationAction {
 
     private JWTContext jwtCtx;
 
-    private final String cookieName;
-    private String cookieDomain;
-
-    public JWTValidator(String cookieName, String cookieDomain) {
-        super();
-        this.cookieName = cookieName;
-        this.cookieDomain = cookieDomain;
-    }
-
-
     protected boolean doPreExecute(@Nonnull ProfileRequestContext profileRequestContext, @Nonnull AuthenticationContext authenticationContext) {
 
         jwtCtx = authenticationContext.getSubcontext(JWTContext.class);
@@ -63,16 +53,7 @@ public class JWTValidator extends AbstractValidationAction {
             log.error("Could not extract user JWTContext");
             ActionSupport.buildEvent(profileRequestContext, AuthnEventIds.AUTHN_EXCEPTION);
         } else {
-            log.info("JWT username is: {}", jwtCtx.getUsername());
-            //remove jwt cookie
-            Cookie jwtCookie = new Cookie(cookieName, "");
-            jwtCookie.setMaxAge(0);
-            jwtCookie.setPath("/");
-            jwtCookie.setDomain(cookieDomain);
-            jwtCookie.setSecure(true);
-            jwtCookie.setHttpOnly(true);
-            this.getHttpServletResponse().addCookie(jwtCookie);
-
+            log.info("Username {} successfully authenticated by JWT-cookie", jwtCtx.getUsername());
             buildAuthenticationResult(profileRequestContext, authenticationContext);
             ActionSupport.buildProceedEvent(profileRequestContext);
         }
