@@ -55,7 +55,7 @@ cp target/classes/flows/authn/jwt/jwt-authn-flow.xml $IDP_HOME/flows/authn/jwt/
 
 Generate EC-keypair and extract public key. Provide this public key to the system who is responsible for creating the
 JWT. 
-```$xslt
+```
 openssl ecparam -genkey -name secp521r1 -noout -out $IDP_HOME/credentials/ec-keypair.pem
 openssl ec -in iam-ec512-key-pair.pem -pubout -out $IDP_HOME/credentials/ec-pubkey.pem
 ```
@@ -81,7 +81,7 @@ idp.authn.jwt.cookie_domain=.example.com
 ```
 
 Edit $IDP_HOME/conf/idp.properties and add reference to jwt.properties file
-```$xslt
+```
 idp.additionalProperties = /conf/ldap.properties, /conf/saml-nameid.properties, /conf/services.properties, /conf/jwt.properties
 ```
 
