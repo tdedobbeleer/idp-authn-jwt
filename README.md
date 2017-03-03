@@ -25,14 +25,14 @@ In any event the cookie that is configured to contain the JWT will be removed (e
 
 ## Build and install
 
-```
+```bash
 git clone https://github.com/KULeuven-CCIS/idp-authn-jwt.git
 cd idp-authn-jwt/
 mvn package
 ```
 
 Copy jar & dependencies (of course versions can vary in the future). Be sure not to duplicate/conflict jars with $IDP_HOME/webapp/WEB-INF/lib/
-```
+```bash
 cp target/idp-authn-jwt*jar $IDP_HOME/edit-webapp/WEB-INF/lib/
 cp ~/.m2/repository/com/nimbusds/nimbus-jose-jwt/4.34.2/nimbus-jose-jwt-4.34.2.jar $IDP_HOME/edit-webapp/WEB-INF/lib/
 cp ~/.m2/repository/net/minidev/json-smart/1.3.1/json-smart-1.3.1.jar $IDP_HOME/edit-webapp/WEB-INF/lib/
@@ -44,7 +44,7 @@ cd $IDP_HOME
 ```
 
 Copy the configuration files:
-```
+```bash
 cp target/classes/conf/authn/jwt-authn-* $IDP_HOME/conf/authn/
 cp target/classes/conf/jwt.properties $IDP_HOME/conf/
 mkdir $IDP_HOME/flows/authn/jwt
@@ -55,7 +55,7 @@ cp target/classes/flows/authn/jwt/jwt-authn-flow.xml $IDP_HOME/flows/authn/jwt/
 
 Generate EC-keypair and extract public key. Provide this public key to the system who is responsible for creating the
 JWT. 
-```
+```bash
 openssl ecparam -genkey -name secp521r1 -noout -out $IDP_HOME/credentials/ec-keypair.pem
 openssl ec -in iam-ec512-key-pair.pem -pubout -out $IDP_HOME/credentials/ec-pubkey.pem
 ```
@@ -95,31 +95,32 @@ idp.authn.flows=MFA
 Add the following bean to ```$IDP_HOME/conf/authn/general-authn.xml```
 
 In list "shibboleth.AvailableAuthenticationFlows":
-```
-        <bean id="authn/jwt" parent="shibboleth.AuthenticationFlow"
-                p:passiveAuthenticationSupported="false"
-                p:forcedAuthenticationSupported="false">
-            <property name="supportedPrincipals">
-                <util:list>
-                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="https://account.example.com/jwt" />
-                </util:list>
-            </property>
-        </bean>
 
-        <bean id="authn/MFA" parent="shibboleth.AuthenticationFlow"
-                p:passiveAuthenticationSupported="true"
-                p:forcedAuthenticationSupported="true">
-            <property name="supportedPrincipals">
-                <list>
-                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport" />
-                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="https://account.example.com/jwt" />
-                </list>
-            </property>
-        </bean>
+```xml
+<bean id="authn/jwt" parent="shibboleth.AuthenticationFlow"
+        p:passiveAuthenticationSupported="false"
+        p:forcedAuthenticationSupported="false">
+    <property name="supportedPrincipals">
+        <util:list>
+            <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="https://account.example.com/jwt" />
+        </util:list>
+    </property>
+</bean>
+
+<bean id="authn/MFA" parent="shibboleth.AuthenticationFlow"
+        p:passiveAuthenticationSupported="true"
+        p:forcedAuthenticationSupported="true">
+    <property name="supportedPrincipals">
+        <list>
+            <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport" />
+            <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="https://account.example.com/jwt" />
+        </list>
+    </property>
+</bean>
 ```
 
 Example configuration for authn/MFA:
-```
+```xml
     <util:map id="shibboleth.authn.MFA.TransitionMap">
         <entry key="">
             <bean parent="shibboleth.authn.MFA.Transition" p:nextFlow="authn/jwt" />
