@@ -7,7 +7,7 @@ system who share a common domain.
 This project is hosted and used by the [KU Leuven University](https://www.kuleuven.be).
 
 The JWT-token must have at least the following claims:
-```
+```json
 {
     "sub":"userid",
     "iss":"https:\/\/account.example.com",
@@ -31,7 +31,8 @@ cd idp-authn-jwt/
 mvn package
 ```
 
-Copy jar & dependencies (of course versions can vary in the future). Be sure not to duplicate/conflict jars with $IDP_HOME/webapp/WEB-INF/lib/
+Copy jar & dependencies (of course versions can vary in the future). Be sure not to duplicate/conflict jars with ```$IDP_HOME/webapp/WEB-INF/lib/```
+
 ```bash
 cp target/idp-authn-jwt*jar $IDP_HOME/edit-webapp/WEB-INF/lib/
 cp ~/.m2/repository/com/nimbusds/nimbus-jose-jwt/4.34.2/nimbus-jose-jwt-4.34.2.jar $IDP_HOME/edit-webapp/WEB-INF/lib/
@@ -44,6 +45,7 @@ cd $IDP_HOME
 ```
 
 Copy the configuration files:
+
 ```bash
 cp target/classes/conf/authn/jwt-authn-* $IDP_HOME/conf/authn/
 cp target/classes/conf/jwt.properties $IDP_HOME/conf/
@@ -55,6 +57,7 @@ cp target/classes/flows/authn/jwt/jwt-authn-flow.xml $IDP_HOME/flows/authn/jwt/
 
 Generate EC-keypair and extract public key. Provide this public key to the system who is responsible for creating the
 JWT. 
+
 ```bash
 openssl ecparam -genkey -name secp521r1 -noout -out $IDP_HOME/credentials/ec-keypair.pem
 openssl ec -in iam-ec512-key-pair.pem -pubout -out $IDP_HOME/credentials/ec-pubkey.pem
@@ -81,6 +84,7 @@ idp.authn.jwt.cookie_domain=.example.com
 ```
 
 Edit $IDP_HOME/conf/idp.properties and add reference to jwt.properties file
+
 ```
 idp.additionalProperties = /conf/ldap.properties, /conf/saml-nameid.properties, /conf/services.properties, /conf/jwt.properties
 ```
@@ -88,6 +92,7 @@ idp.additionalProperties = /conf/ldap.properties, /conf/saml-nameid.properties, 
 Configure the authn/MFA flow to look for a JWT, if success, proceed, otherwise fallback to Password.
  
 Edit $IDP_HOME/conf/idp.properties 
+
 ```
 idp.authn.flows=MFA
 ```
@@ -120,6 +125,7 @@ In list "shibboleth.AvailableAuthenticationFlows":
 ```
 
 Example configuration for authn/MFA:
+
 ```xml
     <util:map id="shibboleth.authn.MFA.TransitionMap">
         <entry key="">
