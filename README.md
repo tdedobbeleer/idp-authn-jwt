@@ -7,6 +7,7 @@ system who share a common domain.
 This project is hosted and used by the [KU Leuven University](https://www.kuleuven.be).
 
 The JWT-token must have at least the following claims:
+
 ```json
 {
     "sub":"userid",
