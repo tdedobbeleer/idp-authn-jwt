@@ -4,6 +4,8 @@ This authentication module can be used to authenticate the user based on a JWT-t
 common domain cookie. We use this to enable Single Sign-On between our account management system and Shibboleth IdP3
 system who share a common domain.
 
+This project is hosted and used by the [KU Leuven University](https://www.kuleuven.be).
+
 The JWT-token must have at least the following claims:
 ```
 {
@@ -41,6 +43,8 @@ cd $IDP_HOME
 ./bin/build.sh
 ```
 
+Copy the configuration files:
+```
 cp target/classes/conf/authn/jwt-authn-* $IDP_HOME/conf/authn/
 cp target/classes/conf/jwt.properties $IDP_HOME/conf/
 mkdir $IDP_HOME/flows/authn/jwt
@@ -88,7 +92,7 @@ Edit $IDP_HOME/conf/idp.properties
 idp.authn.flows=MFA
 ```
 
-Add the following bean to $IDP_HOME/conf/authn/general-authn.xml
+Add the following bean to ```$IDP_HOME/conf/authn/general-authn.xml```
 
 In list "shibboleth.AvailableAuthenticationFlows":
 ```
@@ -133,7 +137,3 @@ Example configuration for authn/MFA:
         <!-- An implicit final rule will return whatever the final flow returns. -->
     </util:map>
 ```
-
-
-
-
