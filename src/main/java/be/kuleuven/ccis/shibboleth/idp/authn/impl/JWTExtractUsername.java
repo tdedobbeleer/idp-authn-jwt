@@ -2,18 +2,16 @@ package be.kuleuven.ccis.shibboleth.idp.authn.impl;
 
 import be.kuleuven.ccis.shibboleth.idp.authn.context.JWTContext;
 import net.shibboleth.idp.authn.AbstractExtractionAction;
-import net.shibboleth.idp.authn.AbstractValidationAction;
 import net.shibboleth.idp.authn.AuthnEventIds;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
-import net.shibboleth.idp.authn.principal.UsernamePrincipal;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import org.opensaml.profile.action.ActionSupport;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import be.kuleuven.ccis.idp.util.jwt.JWTProcessor;
 
 import javax.annotation.Nonnull;
-import javax.security.auth.Subject;
 
 /**
  * Created by philip on 28.02.2017

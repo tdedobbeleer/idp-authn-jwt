@@ -38,7 +38,7 @@
           c:cookieName-ref="shibboleth.authn.jwt.cookie_name"
           c:cookieDomain-ref="shibboleth.authn.jwt.cookie_domain"/>
 
-    <bean id="jwtProcessor" class="be.kuleuven.ccis.shibboleth.idp.authn.impl.JWTProcessor"
+    <bean id="jwtProcessor" class="be.kuleuven.ccis.idp.util.jwt.JWTProcessor"
           c:privatekey-ref="shibboleth.authn.jwt.privatekey"
           c:jweAlgorithms-ref="shibboleth.authn.jwt.jwe.algorithms"
           c:jwsAlgorithms-ref="shibboleth.authn.jwt.jws.algorithms"
